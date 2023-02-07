@@ -1,6 +1,7 @@
 package com.ryanwoolf.measurementconverter.services;
 
 import com.ryanwoolf.measurementconverter.constants.MeasurementConstants;
+import com.ryanwoolf.measurementconverter.factories.KilogramPoundMeasurement;
 import com.ryanwoolf.measurementconverter.factories.KilometerMilesMeasurement;
 import com.ryanwoolf.measurementconverter.factories.TemperatureMeasurement;
 import com.ryanwoolf.measurementconverter.interfaces.Measurement;
@@ -21,6 +22,9 @@ public class ConversionService {
     @Autowired
     KilometerMilesMeasurement kilometerMilesMeasurement;
 
+    @Autowired
+    KilogramPoundMeasurement kilogramPoundMeasurement;
+
     private static final Map<String, Measurement> handler = new HashMap<String, Measurement>();
 
     /*
@@ -31,6 +35,7 @@ public class ConversionService {
     private Map<String, Measurement> getObject() {
         handler.put(MeasurementConstants.TEMPERATURE, temperatureMeasurement);
         handler.put(MeasurementConstants.KILOMETER_MILES, kilometerMilesMeasurement);
+        handler.put(MeasurementConstants.KILOGRAM_POUNDS, kilogramPoundMeasurement);
         return handler;
     }
 

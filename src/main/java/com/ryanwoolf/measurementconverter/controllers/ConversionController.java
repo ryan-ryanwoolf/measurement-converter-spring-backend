@@ -19,7 +19,7 @@ public class ConversionController {
     Ryan Woolf
     This is the endpoint that calculates the conversion from metric to imperial and vice versa
      */
-    @CrossOrigin( origins = {"http://localhost:4200", "https://www.ryanwoolftechnicalassessment"} )
+    @CrossOrigin( origins = {"http://localhost:4200", "https://www.ryanwoolftechnicalassessment.co.za"} )
     @GetMapping("/measure-units")
     public ResponseEntity<GenericResponse> example(@RequestParam("measurementType") String measurementType,
                                                    @RequestParam("measurementSystemFrom") String measurementSystemFrom,
