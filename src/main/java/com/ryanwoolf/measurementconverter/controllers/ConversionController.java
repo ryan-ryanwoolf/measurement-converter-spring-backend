@@ -1,7 +1,10 @@
 package com.ryanwoolf.measurementconverter.controllers;
 
-import com.ryanwoolf.measurementconverter.interfaces.Measurement;
-import com.ryanwoolf.measurementconverter.services.ConversionService;
+import com.ryanwoolf.measurementconverter.ExceptionHandling.InvalidCalculationException;
+import com.ryanwoolf.measurementconverter.ExceptionHandling.InvalidMeasurementException;
+import com.ryanwoolf.measurementconverter.services.DistanceService;
+import com.ryanwoolf.measurementconverter.services.TemperatureService;
+import com.ryanwoolf.measurementconverter.services.WeightService;
 import com.ryanwoolf.measurementconverter.utils.GenericResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,12 +16,18 @@ import org.springframework.web.bind.annotation.*;
 public class ConversionController {
 
     @Autowired
-    ConversionService conversionService;
+    TemperatureService temperatureService;
 
+    @Autowired
+    DistanceService distanceService;
+
+    @Autowired
+    WeightService weightService;
     /*
     Ryan Woolf
     This is the endpoint that calculates the conversion from metric to imperial and vice versa
      */
+<<<<<<< Updated upstream
     @CrossOrigin( origins = {"http://localhost:4200", "https://www.ryanwoolftechnicalassessment"} )
     @GetMapping("/measure-units")
     public ResponseEntity<GenericResponse> example(@RequestParam("measurementType") String measurementType,
@@ -27,16 +36,50 @@ public class ConversionController {
         try{
 
             float getAnswer = conversionService.calculateConversion(measurementAmount,measurementSystemFrom,measurementType);
+=======
+    @CrossOrigin( origins = {"http://localhost:4200"} ) //Dev
+//    @CrossOrigin( origins = {"https://www.ryanwoolftechnicalassessment.co.za"} ) //Prod
+    @GetMapping("/convert-temperature")
+    public ResponseEntity<GenericResponse> convertTemperature(
+                                                   @RequestParam("calculationId") int calculationId,
+                                                   @RequestParam("measurementAmount") float measurementAmount) throws InvalidCalculationException, InvalidMeasurementException {
+            float getAnswer = temperatureService.calculateTemperature(measurementAmount,calculationId);
+>>>>>>> Stashed changes
             GenericResponse response = new GenericResponse("The measurement was calculated!",200,true, getAnswer);
             return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-        catch(Exception e)
-        {
-            GenericResponse errorResponse = new GenericResponse("Failed",500,false,0);
-            return new ResponseEntity<>(errorResponse, HttpStatus.EXPECTATION_FAILED);
-        }
-
 
     }
 
+    @GetMapping("/convert-distance")
+    public ResponseEntity<GenericResponse> convertDistance(
+            @RequestParam("calculationId") int calculationId,
+            @RequestParam("measurementAmount") float measurementAmount) throws InvalidCalculationException, InvalidMeasurementException {
+        float getAnswer = distanceService.calculateDistance(measurementAmount,calculationId);
+        GenericResponse response = new GenericResponse("The measurement was calculated!",200,true, getAnswer);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+
+    }
+
+    @GetMapping("/convert-weight")
+    public ResponseEntity<GenericResponse> convertWeight(
+            @RequestParam("calculationId") int calculationId,
+            @RequestParam("measurementAmount") float measurementAmount) throws InvalidCalculationException, InvalidMeasurementException {
+        float getAnswer = weightService.calculateWeight(measurementAmount,calculationId);
+        GenericResponse response = new GenericResponse("The measurement was calculated!",200,true, getAnswer);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+
+    }
+
+//    @CrossOrigin( origins = {"http://localhost:4200", "https://www.ryanwoolftechnicalassessment.co.za"} )
+//    @GetMapping("/measure-units")
+//    public ResponseEntity<GenericResponse> measureUnits(@RequestParam("measurementType") String measurementType,
+//                                                        @RequestParam("measurementSystemFrom") String measurementSystemFrom,
+//                                                        @RequestParam("measurementAmount") float measurementAmount) {
+//
+//        System.out.println("in measureUnits");
+//        float getAnswer = conversionService.calculateConversion(measurementAmount,measurementSystemFrom,measurementType);
+//        GenericResponse response = new GenericResponse("The measurement was calculated!",200,true, getAnswer);
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+//
+//    }
 }
