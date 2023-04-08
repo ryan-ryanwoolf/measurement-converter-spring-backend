@@ -40,6 +40,8 @@ public class ConversionController {
 
     }
 
+    @CrossOrigin( origins = {"http://localhost:4200"} ) //Dev
+//    @CrossOrigin( origins = {"https://www.ryanwoolftechnicalassessment.co.za"} ) //Prod
     @GetMapping("/convert-distance")
     public ResponseEntity<GenericResponse> convertDistance(
             @RequestParam("calculationId") int calculationId,
@@ -50,6 +52,8 @@ public class ConversionController {
 
     }
 
+    @CrossOrigin( origins = {"http://localhost:4200"} ) //Dev
+//    @CrossOrigin( origins = {"https://www.ryanwoolftechnicalassessment.co.za"} ) //Prod
     @GetMapping("/convert-weight")
     public ResponseEntity<GenericResponse> convertWeight(
             @RequestParam("calculationId") int calculationId,
