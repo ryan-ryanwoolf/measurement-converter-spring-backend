@@ -3,9 +3,6 @@ package com.ryanwoolf.measurementconverter.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ryanwoolf.measurementconverter.ExceptionHandling.InvalidCalculationException;
 import com.ryanwoolf.measurementconverter.ExceptionHandling.InvalidMeasurementException;
-import com.ryanwoolf.measurementconverter.calculations.DistanceMeasurement;
-import com.ryanwoolf.measurementconverter.calculations.TemperatureMeasurement;
-import com.ryanwoolf.measurementconverter.calculations.WeightMeasurement;
 import com.ryanwoolf.measurementconverter.services.DistanceService;
 import com.ryanwoolf.measurementconverter.services.TemperatureService;
 import com.ryanwoolf.measurementconverter.services.WeightService;
@@ -45,9 +42,9 @@ class ConversionControllerTest {
     public void ConversionController_ConvertTemperature_StatusIsOkAndJsonAsExpected() throws Exception {
 
         float measurementAmount = 30.0f;
-        int calculationId = TemperatureMeasurement.TEMPERATURE_CELSIUS_TO_FAHRENHEIT;
+        int calculationId = TemperatureService.TEMPERATURE_CELSIUS_TO_FAHRENHEIT;
         float expectedResult = 86.0f;
-        when(temperatureService.calculateTemperature(measurementAmount, calculationId)).thenReturn(expectedResult);
+        when(temperatureService.convertMeasurement(measurementAmount, calculationId)).thenReturn(expectedResult);
         mockMvc.perform(get("/api/convert-temperature")
                         .param("calculationId", String.valueOf(calculationId))
                         .param("measurementAmount", String.valueOf(measurementAmount))
@@ -61,7 +58,7 @@ class ConversionControllerTest {
     public void ConversionController_ConvertTemperature_InvalidCalculation() throws Exception {
         int calculationId = -1; // an invalid calculation ID
         float measurementAmount = 20.0f;
-        when(temperatureService.calculateTemperature(measurementAmount, calculationId))
+        when(temperatureService.convertMeasurement(measurementAmount, calculationId))
                 .thenThrow(new InvalidCalculationException("Invalid calculation ID"));
 
         mockMvc.perform(get("/api/convert-temperature")
@@ -75,7 +72,7 @@ class ConversionControllerTest {
     public void ConversionController_ConvertTemperature_InvalidMeasurement() throws Exception {
         int calculationId = -1; // an invalid calculation ID
         float measurementAmount = 20.0f;
-        when(temperatureService.calculateTemperature(measurementAmount, calculationId))
+        when(temperatureService.precheckValidations(measurementAmount, calculationId))
                 .thenThrow(new InvalidMeasurementException("Invalid measurement"));
 
         mockMvc.perform(get("/api/convert-temperature")
@@ -90,9 +87,10 @@ class ConversionControllerTest {
     public void ConversionController_ConvertDistance_StatusIsOkAndJsonAsExpected() throws Exception {
 
         float measurementAmount = 20.0f;
-        int calculationId = DistanceMeasurement.DISTANCE_KILOMETERS_TO_MILES;
+        int calculationId = DistanceService.DISTANCE_KILOMETERS_TO_MILES;
         float expectedResult = 12.43f;
-        when(distanceService.calculateDistance(measurementAmount, calculationId)).thenReturn(expectedResult);
+        when(distanceService.precheckValidations(measurementAmount, calculationId)).thenReturn(true);
+        when(distanceService.convertMeasurement(measurementAmount, calculationId)).thenReturn(expectedResult);
         mockMvc.perform(get("/api/convert-distance")
                         .param("calculationId", String.valueOf(calculationId))
                         .param("measurementAmount", String.valueOf(measurementAmount))
@@ -106,7 +104,7 @@ class ConversionControllerTest {
     public void ConversionController_ConvertDistance_InvalidCalculation() throws Exception {
         int calculationId = -1; // an invalid calculation ID
         float measurementAmount = 20.0f;
-        when(distanceService.calculateDistance(measurementAmount, calculationId))
+        when(distanceService.precheckValidations(measurementAmount, calculationId))
                 .thenThrow(new InvalidCalculationException("Invalid calculation ID"));
 
         mockMvc.perform(get("/api/convert-distance")
@@ -120,7 +118,7 @@ class ConversionControllerTest {
     public void ConversionController_ConvertDistance_InvalidMeasurement() throws Exception {
         int calculationId = -1; // an invalid calculation ID
         float measurementAmount = 20.0f;
-        when(distanceService.calculateDistance(measurementAmount, calculationId))
+        when(distanceService.precheckValidations(measurementAmount, calculationId))
                 .thenThrow(new InvalidMeasurementException("Invalid measurement"));
 
         mockMvc.perform(get("/api/convert-distance")
@@ -134,9 +132,9 @@ class ConversionControllerTest {
     public void ConversionController_ConvertWeight_StatusIsOkAndJsonAsExpected() throws Exception {
 
         float measurementAmount = 20.0f;
-        int calculationId = WeightMeasurement.WEIGHT_KILOGRAMS_TO_POUNDS;
+        int calculationId = WeightService.WEIGHT_KILOGRAMS_TO_POUNDS;
         float expectedResult = 44.1f;
-        when(weightService.calculateWeight(measurementAmount, calculationId)).thenReturn(expectedResult);
+        when(weightService.convertMeasurement(measurementAmount, calculationId)).thenReturn(expectedResult);
         mockMvc.perform(get("/api/convert-weight")
                         .param("calculationId", String.valueOf(calculationId))
                         .param("measurementAmount", String.valueOf(measurementAmount))
@@ -150,7 +148,7 @@ class ConversionControllerTest {
     public void ConversionController_ConvertWeight_InvalidCalculation() throws Exception {
         int calculationId = -1; // an invalid calculation ID
         float measurementAmount = 20.0f;
-        when(weightService.calculateWeight(measurementAmount, calculationId))
+        when(weightService.precheckValidations(measurementAmount, calculationId))
                 .thenThrow(new InvalidCalculationException("Invalid calculation ID"));
 
         mockMvc.perform(get("/api/convert-weight")
@@ -164,7 +162,7 @@ class ConversionControllerTest {
     public void ConversionController_ConvertWeight_InvalidMeasurement() throws Exception {
         int calculationId = -1; // an invalid calculation ID
         float measurementAmount = 20.0f;
-        when(weightService.calculateWeight(measurementAmount, calculationId))
+        when(weightService.convertMeasurement(measurementAmount, calculationId))
                 .thenThrow(new InvalidCalculationException("Invalid measurement"));
 
         mockMvc.perform(get("/api/convert-weight")
@@ -172,5 +170,19 @@ class ConversionControllerTest {
                         .param("measurementAmount", String.valueOf(measurementAmount)))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json("{\"errorDefinition\": {\"errorMessage\": \"Invalid measurement\"}}"));
+    }
+
+    @Test
+    public void ConversionController_ConvertWeight_OtherError() throws Exception {
+        int calculationId = 1; // an invalid calculation ID
+        float measurementAmount = 20.0f;
+        when(weightService.convertMeasurement(measurementAmount, calculationId))
+                .thenThrow(new NullPointerException());
+
+        mockMvc.perform(get("/api/convert-weight")
+                        .param("calculationId", String.valueOf(calculationId))
+                        .param("measurementAmount", String.valueOf(measurementAmount)))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().json("{\"errorDefinition\": {\"errorMessage\": null}}"));
     }
 }

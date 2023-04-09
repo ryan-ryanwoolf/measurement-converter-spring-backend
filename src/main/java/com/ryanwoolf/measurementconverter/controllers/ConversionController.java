@@ -34,7 +34,8 @@ public class ConversionController {
     public ResponseEntity<GenericResponse> convertTemperature(
                                                    @RequestParam("calculationId") int calculationId,
                                                    @RequestParam("measurementAmount") float measurementAmount) throws InvalidCalculationException, InvalidMeasurementException {
-            float getAnswer = temperatureService.calculateTemperature(measurementAmount,calculationId);
+        temperatureService.precheckValidations(measurementAmount,calculationId);
+        float getAnswer = temperatureService.convertMeasurement(measurementAmount,calculationId);
             GenericResponse response = new GenericResponse("The measurement was calculated!",200,true, getAnswer);
             return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -46,7 +47,8 @@ public class ConversionController {
     public ResponseEntity<GenericResponse> convertDistance(
             @RequestParam("calculationId") int calculationId,
             @RequestParam("measurementAmount") float measurementAmount) throws InvalidCalculationException, InvalidMeasurementException {
-        float getAnswer = distanceService.calculateDistance(measurementAmount,calculationId);
+        distanceService.precheckValidations(measurementAmount,calculationId);
+        float getAnswer = distanceService.convertMeasurement(measurementAmount,calculationId);
         GenericResponse response = new GenericResponse("The measurement was calculated!",200,true, getAnswer);
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -58,7 +60,8 @@ public class ConversionController {
     public ResponseEntity<GenericResponse> convertWeight(
             @RequestParam("calculationId") int calculationId,
             @RequestParam("measurementAmount") float measurementAmount) throws InvalidCalculationException, InvalidMeasurementException {
-        float getAnswer = weightService.calculateWeight(measurementAmount,calculationId);
+        weightService.precheckValidations(measurementAmount,calculationId);
+        float getAnswer = weightService.convertMeasurement(measurementAmount,calculationId);
         GenericResponse response = new GenericResponse("The measurement was calculated!",200,true, getAnswer);
         return new ResponseEntity<>(response, HttpStatus.OK);
 
