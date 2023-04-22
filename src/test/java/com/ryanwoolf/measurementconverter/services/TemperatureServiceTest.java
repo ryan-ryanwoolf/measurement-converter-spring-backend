@@ -18,19 +18,57 @@ class TemperatureServiceTest {
     private TemperatureService temperatureService;
 
     @Test
-    public void TemperatureService_ConvertTemperature_AnswerIsCreatedCToF() throws Exception {
+    public void TemperatureService_ConvertTemperature_AnswerIsCreatedCelsiusToFahrenheit() throws Exception {
         float measurementAmount = 30.0f;
-        int calculationId = TemperatureService.TEMPERATURE_CELSIUS_TO_FAHRENHEIT;
+        String fromUnit = TemperatureService.TEMPERATURE_UNITS_DEGREES_CELSIUS;
+        String toUnit = TemperatureService.TEMPERATURE_UNITS_FAHRENHEIT;
         float expectedResult = 86.0f;
-        assertEquals(expectedResult,temperatureService.convertMeasurement(measurementAmount,calculationId),.01);
+        assertEquals(expectedResult,temperatureService.convertMeasurement(measurementAmount,fromUnit,toUnit),.01);
     }
 
     @Test
-    public void TemperatureService_ConvertTemperature_AnswerIsCreatedFToC() throws Exception {
+    public void TemperatureService_ConvertTemperature_AnswerIsCreatedFahrenheitToCelsius() throws Exception {
         float measurementAmount = 86.0f;
-        int calculationId = TemperatureService.TEMPERATURE_FAHRENHEIT_TO_CELSIUS;
+        String fromUnit = TemperatureService.TEMPERATURE_UNITS_FAHRENHEIT;
+        String toUnit = TemperatureService.TEMPERATURE_UNITS_DEGREES_CELSIUS;
         float expectedResult = 30.0f;
-        assertEquals(expectedResult,temperatureService.convertMeasurement(measurementAmount,calculationId),.01);
+        assertEquals(expectedResult,temperatureService.convertMeasurement(measurementAmount,fromUnit,toUnit),.01);
+    }
+
+    @Test
+    public void TemperatureService_ConvertTemperature_AnswerIsCreatedKelvinToCelsius() throws Exception {
+        float measurementAmount = 298.0f;
+        String fromUnit = TemperatureService.TEMPERATURE_UNITS_KELVINS;
+        String toUnit = TemperatureService.TEMPERATURE_UNITS_DEGREES_CELSIUS;
+        float expectedResult = 24.85f;
+        assertEquals(expectedResult,temperatureService.convertMeasurement(measurementAmount,fromUnit,toUnit),.01);
+    }
+
+    @Test
+    public void TemperatureService_ConvertTemperature_AnswerIsCreatedKelvinToFahrenheit() throws Exception {
+        float measurementAmount = 298.0f;
+        String fromUnit = TemperatureService.TEMPERATURE_UNITS_KELVINS;
+        String toUnit = TemperatureService.TEMPERATURE_UNITS_FAHRENHEIT;
+        float expectedResult = 76.73f;
+        assertEquals(expectedResult,temperatureService.convertMeasurement(measurementAmount,fromUnit,toUnit),.01);
+    }
+
+    @Test
+    public void TemperatureService_ConvertTemperature_AnswerIsCreatedCelsiusToKelvin() throws Exception {
+        float measurementAmount = 35.0f;
+        String fromUnit = TemperatureService.TEMPERATURE_UNITS_DEGREES_CELSIUS;
+        String toUnit = TemperatureService.TEMPERATURE_UNITS_KELVINS;
+        float expectedResult = 308.15f;
+        assertEquals(expectedResult,temperatureService.convertMeasurement(measurementAmount,fromUnit,toUnit),.01);
+    }
+
+    @Test
+    public void TemperatureService_ConvertTemperature_AnswerIsCreatedFahrenheitToKelvin() throws Exception {
+        float measurementAmount = 68.0f;
+        String fromUnit = TemperatureService.TEMPERATURE_UNITS_FAHRENHEIT;
+        String toUnit = TemperatureService.TEMPERATURE_UNITS_KELVINS;
+        float expectedResult = 293.15f;
+        assertEquals(expectedResult,temperatureService.convertMeasurement(measurementAmount,fromUnit,toUnit),.01);
     }
 
     @Test
@@ -39,38 +77,31 @@ class TemperatureServiceTest {
         int calculationId = -1;
         assertThrowsExactly(InvalidCalculationException.class,
                 ()->{
-                    temperatureService.precheckValidations(measurementAmount,calculationId);
+                    temperatureService.convertMeasurement(measurementAmount,"incorrectunit",TemperatureService.TEMPERATURE_UNITS_KELVINS);
                 });
 
         assertThrowsExactly(InvalidCalculationException.class,
                 ()->{
-                    temperatureService.convertMeasurement(measurementAmount,calculationId);
+                    temperatureService.convertMeasurement(measurementAmount,TemperatureService.TEMPERATURE_UNITS_DEGREES_CELSIUS,"incorrectunit");
                 });
     }
 
     @Test
     public void TemperatureService_ConvertTemperature_MeasurementError() throws Exception {
         float measurementAmount = -500.0f;
-        int calculationId = TemperatureService.TEMPERATURE_CELSIUS_TO_FAHRENHEIT;
-        int finalCalculationId1 = calculationId;
+        String fromUnit = TemperatureService.TEMPERATURE_UNITS_DEGREES_CELSIUS;
+        String toUnit = TemperatureService.TEMPERATURE_UNITS_FAHRENHEIT;
         assertThrowsExactly(InvalidMeasurementException.class,
                 ()->{
-                    temperatureService.precheckValidations(measurementAmount, finalCalculationId1);
+                    temperatureService.convertMeasurement(measurementAmount, fromUnit,toUnit);
                 });
+        String toUnit2 = TemperatureService.TEMPERATURE_UNITS_DEGREES_CELSIUS;
+        String fromUnit2 = TemperatureService.TEMPERATURE_UNITS_FAHRENHEIT;
 
-        calculationId = TemperatureService.TEMPERATURE_FAHRENHEIT_TO_CELSIUS;
-
-        int finalCalculationId = calculationId;
         assertThrowsExactly(InvalidMeasurementException.class,
                 ()->{
-                    temperatureService.precheckValidations(measurementAmount, finalCalculationId);
+                    temperatureService.convertMeasurement(measurementAmount, fromUnit2,toUnit2);
                 });
     }
 
-    @Test
-    public void TemperatureService_ConvertTemperature_PrecheckValidationsPass() throws Exception {
-        float measurementAmount = 12.43f;
-        int calculationId = DistanceService.DISTANCE_MILES_TO_KILOMETERS;
-        assertTrue(temperatureService.precheckValidations(measurementAmount,calculationId));
-    }
 }

@@ -9,47 +9,49 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
-public class TemperatureService  implements Measurement {
+public class TemperatureService {
 
-    public static final int TEMPERATURE_CELSIUS_TO_FAHRENHEIT = 1;
-    public static final int TEMPERATURE_FAHRENHEIT_TO_CELSIUS = 2;
+    public static final String TEMPERATURE_UNITS_KELVINS = "kelvins";
+    public static final String TEMPERATURE_UNITS_DEGREES_CELSIUS = "degrees celsius";
+    public static final String TEMPERATURE_UNITS_FAHRENHEIT = "fahrenheit";
 
-    @Override
-    public float convertMeasurement(float fromAmount, int calculationId) throws InvalidCalculationException {
-        switch(calculationId) {
-            case TEMPERATURE_CELSIUS_TO_FAHRENHEIT:
-                int calculationPlus = 32;
-                return (fromAmount * 9/5) + calculationPlus;
-            case TEMPERATURE_FAHRENHEIT_TO_CELSIUS:
-                int calculationMinus = 32;
-                return (fromAmount - calculationMinus) * 5/9;
+
+    public float convertMeasurement(float fromAmount, String unitFrom,String unitTo) throws InvalidCalculationException, InvalidMeasurementException {
+        float convertedToSIUnit = convertToSIUnit(fromAmount,unitFrom);
+        if(convertedToSIUnit<0){
+            throw new InvalidMeasurementException("The amount requested was below the lowest valid temperature");
+        }
+        return convertFromSIUnit(convertedToSIUnit,unitTo);
+    }
+
+    public float convertToSIUnit(float fromAmount,String unitFrom) throws InvalidCalculationException {
+        switch(unitFrom) {
+            case TEMPERATURE_UNITS_FAHRENHEIT:
+                //calculation
+                return (float) ((fromAmount - 32) * 5/9 + 273.15);
+            case TEMPERATURE_UNITS_DEGREES_CELSIUS:
+                //calculation
+                return fromAmount + 273.15F;
+            case TEMPERATURE_UNITS_KELVINS:
+                return fromAmount;
             default:
-                throw new InvalidCalculationException("The calculation provided is not applicable for a temperature conversion");
-                //throw invalid calculation type
-                // code block
+                throw new InvalidCalculationException("The unit from provided is not applicable for a temperature conversion");
         }
     }
 
-    @Override
-    public boolean precheckValidations(float fromAmount, int calculationId) throws InvalidMeasurementException, InvalidCalculationException {
-        List<Integer> validCalculations = Arrays.asList(TEMPERATURE_CELSIUS_TO_FAHRENHEIT,TEMPERATURE_FAHRENHEIT_TO_CELSIUS);
-        if(!validCalculations.contains(calculationId)){
-            throw new InvalidCalculationException("The calculation provided is not applicable for a temperature conversion");
+    public float convertFromSIUnit(float siAmount,String unitTo) throws InvalidCalculationException {
+        switch(unitTo) {
+            case TEMPERATURE_UNITS_FAHRENHEIT:
+                //calculation
+                return (float) ((siAmount - 273.15) * 9/5 + 32);
+            case TEMPERATURE_UNITS_DEGREES_CELSIUS:
+                //calculation
+                return siAmount - 273.15F;
+            case TEMPERATURE_UNITS_KELVINS:
+                return siAmount;
+            default:
+                throw new InvalidCalculationException("The unit to provided is not applicable for a temperature conversion");
         }
-
-        switch(calculationId) {
-            case TEMPERATURE_CELSIUS_TO_FAHRENHEIT:
-                if(fromAmount < -273.15){
-                    throw new InvalidMeasurementException("The amount provided is below the minimum possible temperature (-273.15 Degres Celsius), where all movement stops.");
-                }
-                break;
-            case TEMPERATURE_FAHRENHEIT_TO_CELSIUS:
-                if(fromAmount < -459.67){
-                    throw new InvalidMeasurementException("The amount provided is below the minimum possible temperature (-459.67 Fahrenheit), where all movement stops.");
-                }
-                break;
-        }
-
-        return true;
     }
+
 }

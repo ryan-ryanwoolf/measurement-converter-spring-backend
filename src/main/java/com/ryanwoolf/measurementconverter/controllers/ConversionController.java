@@ -28,40 +28,41 @@ public class ConversionController {
     This is the endpoint that calculates the conversion from metric to imperial and vice versa
      */
 
-//    @CrossOrigin( origins = {"http://localhost:4200"} ) //Dev
-    @CrossOrigin( origins = {"https://master.d3gm55w78wva9q.amplifyapp.com"} ) //Prod
+    @CrossOrigin( origins = {"http://localhost:4200"} ) //Dev
+//    @CrossOrigin( origins = {"https://master.d3gm55w78wva9q.amplifyapp.com"} ) //Prod
     @GetMapping("/convert-temperature")
     public ResponseEntity<GenericResponse> convertTemperature(
-                                                   @RequestParam("calculationId") int calculationId,
+                                                   @RequestParam("unitFrom") String unitFrom,
+                                                   @RequestParam("unitTo") String unitTo,
                                                    @RequestParam("measurementAmount") float measurementAmount) throws InvalidCalculationException, InvalidMeasurementException {
-        temperatureService.precheckValidations(measurementAmount,calculationId);
-        float getAnswer = temperatureService.convertMeasurement(measurementAmount,calculationId);
+//        temperatureService.precheckValidations(measurementAmount,calculationId);
+        float getAnswer = temperatureService.convertMeasurement(measurementAmount,unitFrom,unitTo);
             GenericResponse response = new GenericResponse("The measurement was calculated!",200,true, getAnswer);
             return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
 
-//    @CrossOrigin( origins = {"http://localhost:4200"} ) //Dev
-    @CrossOrigin( origins = {"https://master.d3gm55w78wva9q.amplifyapp.com"} ) //Prod
+    @CrossOrigin( origins = {"http://localhost:4200"} ) //Dev
+//    @CrossOrigin( origins = {"https://master.d3gm55w78wva9q.amplifyapp.com"} ) //Prod
     @GetMapping("/convert-distance")
     public ResponseEntity<GenericResponse> convertDistance(
-            @RequestParam("calculationId") int calculationId,
+            @RequestParam("unitFrom") String unitFrom,
+            @RequestParam("unitTo") String unitTo,
             @RequestParam("measurementAmount") float measurementAmount) throws InvalidCalculationException, InvalidMeasurementException {
-        distanceService.precheckValidations(measurementAmount,calculationId);
-        float getAnswer = distanceService.convertMeasurement(measurementAmount,calculationId);
+        float getAnswer = distanceService.convertMeasurement(measurementAmount,unitFrom,unitTo);
         GenericResponse response = new GenericResponse("The measurement was calculated!",200,true, getAnswer);
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
 
-//    @CrossOrigin( origins = {"http://localhost:4200"} ) //Dev
-    @CrossOrigin( origins = {"https://master.d3gm55w78wva9q.amplifyapp.com"} ) //Prod
+    @CrossOrigin( origins = {"http://localhost:4200"} ) //Dev
+//    @CrossOrigin( origins = {"https://master.d3gm55w78wva9q.amplifyapp.com"} ) //Prod
     @GetMapping("/convert-weight")
     public ResponseEntity<GenericResponse> convertWeight(
-            @RequestParam("calculationId") int calculationId,
+            @RequestParam("unitFrom") String unitFrom,
+            @RequestParam("unitTo") String unitTo,
             @RequestParam("measurementAmount") float measurementAmount) throws InvalidCalculationException, InvalidMeasurementException {
-        weightService.precheckValidations(measurementAmount,calculationId);
-        float getAnswer = weightService.convertMeasurement(measurementAmount,calculationId);
+        float getAnswer = weightService.convertMeasurement(measurementAmount,unitFrom,unitTo);
         GenericResponse response = new GenericResponse("The measurement was calculated!",200,true, getAnswer);
         return new ResponseEntity<>(response, HttpStatus.OK);
 

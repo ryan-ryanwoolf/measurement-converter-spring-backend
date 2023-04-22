@@ -9,31 +9,59 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
-public class WeightService  implements Measurement {
+public class WeightService {
 
-    public static final int WEIGHT_KILOGRAMS_TO_POUNDS = 1;
-    public static final int WEIGHT_POUNDS_TO_KILOGRAMS = 2;
-    @Override
-    public float convertMeasurement(float fromAmount, int calculationId) throws InvalidCalculationException {
-        switch(calculationId) {
-            case WEIGHT_KILOGRAMS_TO_POUNDS:
-                return (fromAmount * 2.205F);
-            case WEIGHT_POUNDS_TO_KILOGRAMS:
-                return (fromAmount / 2.205F);
+    public static final String WEIGHT_UNITS_KILOGRAMS = "kilograms";
+    public static final String WEIGHT_UNITS_POUNDS = "pounds";
+    public static final String WEIGHT_UNITS_GRAMS = "grams";
+
+
+    public float convertMeasurement(float fromAmount, String unitFrom,String unitTo) throws InvalidCalculationException, InvalidMeasurementException {
+        float convertedToSIUnit = convertToSIUnit(fromAmount,unitFrom);
+        return convertFromSIUnit(convertedToSIUnit,unitTo);
+    }
+
+    public float convertToSIUnit(float fromAmount,String unitFrom) throws InvalidCalculationException {
+        switch(unitFrom) {
+            case WEIGHT_UNITS_GRAMS:
+                //calculation
+                if(fromAmount!=0){
+                    return fromAmount / 1000;
+                }
+                else
+                {
+                    return 0;
+                }
+
+            case WEIGHT_UNITS_POUNDS:
+                //calculation
+                if(fromAmount!=0){
+                    return fromAmount / 2.205F;
+                }
+                else
+                {
+                    return 0;
+                }
+
+            case WEIGHT_UNITS_KILOGRAMS:
+                return fromAmount;
             default:
-                throw new InvalidCalculationException("The calculation provided is not applicable for a weight conversion");
-                //throw invalid calculation type
-                // code block
+                throw new InvalidCalculationException("The unit from provided is not applicable for a temperature conversion");
         }
     }
 
-    @Override
-    public boolean precheckValidations(float fromAmount, int calculationId) throws InvalidMeasurementException, InvalidCalculationException {
-        List<Integer> validCalculations = Arrays.asList(WEIGHT_KILOGRAMS_TO_POUNDS,WEIGHT_POUNDS_TO_KILOGRAMS);
-        if(!validCalculations.contains(calculationId)){
-            throw new InvalidCalculationException("The calculation provided is not applicable for a weight conversion");
+    public float convertFromSIUnit(float siAmount,String unitTo) throws InvalidCalculationException {
+        switch(unitTo) {
+            case WEIGHT_UNITS_GRAMS:
+                //calculation
+                return siAmount * 1000;
+            case WEIGHT_UNITS_POUNDS:
+                //calculation
+                return siAmount * 2.205F;
+            case WEIGHT_UNITS_KILOGRAMS:
+                return siAmount;
+            default:
+                throw new InvalidCalculationException("The unit to provided is not applicable for a temperature conversion");
         }
-
-        return true;
     }
 }

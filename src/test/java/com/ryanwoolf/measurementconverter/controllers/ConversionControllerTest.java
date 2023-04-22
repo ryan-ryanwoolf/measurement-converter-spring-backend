@@ -42,11 +42,14 @@ class ConversionControllerTest {
     public void ConversionController_ConvertTemperature_StatusIsOkAndJsonAsExpected() throws Exception {
 
         float measurementAmount = 30.0f;
-        int calculationId = TemperatureService.TEMPERATURE_CELSIUS_TO_FAHRENHEIT;
+        String unitFrom = TemperatureService.TEMPERATURE_UNITS_DEGREES_CELSIUS;
+        String unitTo = TemperatureService.TEMPERATURE_UNITS_FAHRENHEIT;
+
         float expectedResult = 86.0f;
-        when(temperatureService.convertMeasurement(measurementAmount, calculationId)).thenReturn(expectedResult);
+        when(temperatureService.convertMeasurement(measurementAmount, unitFrom,unitTo)).thenReturn(expectedResult);
         mockMvc.perform(get("/api/convert-temperature")
-                        .param("calculationId", String.valueOf(calculationId))
+                        .param("unitFrom", unitFrom)
+                        .param("unitTo", unitTo)
                         .param("measurementAmount", String.valueOf(measurementAmount))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -56,27 +59,33 @@ class ConversionControllerTest {
 
     @Test
     public void ConversionController_ConvertTemperature_InvalidCalculation() throws Exception {
-        int calculationId = -1; // an invalid calculation ID
+        String unitFrom = "invalid_from_unit";
+        String unitTo = TemperatureService.TEMPERATURE_UNITS_FAHRENHEIT;
+
         float measurementAmount = 20.0f;
-        when(temperatureService.convertMeasurement(measurementAmount, calculationId))
-                .thenThrow(new InvalidCalculationException("Invalid calculation ID"));
+        when(temperatureService.convertMeasurement(measurementAmount, unitFrom,unitTo))
+                .thenThrow(new InvalidCalculationException("Invalid from unit"));
 
         mockMvc.perform(get("/api/convert-temperature")
-                        .param("calculationId", String.valueOf(calculationId))
+                        .param("unitFrom", unitFrom)
+                        .param("unitTo", unitTo)
                         .param("measurementAmount", String.valueOf(measurementAmount)))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().json("{\"errorDefinition\": {\"errorMessage\": \"Invalid calculation ID\"}}"));
+                .andExpect(content().json("{\"errorDefinition\": {\"errorMessage\": \"Invalid from unit\"}}"));
     }
 
     @Test
     public void ConversionController_ConvertTemperature_InvalidMeasurement() throws Exception {
-        int calculationId = -1; // an invalid calculation ID
-        float measurementAmount = 20.0f;
-        when(temperatureService.precheckValidations(measurementAmount, calculationId))
+        String unitFrom = TemperatureService.TEMPERATURE_UNITS_FAHRENHEIT;
+        String unitTo = TemperatureService.TEMPERATURE_UNITS_FAHRENHEIT;
+
+        float measurementAmount = -500.0f;
+        when(temperatureService.convertMeasurement(measurementAmount, unitFrom,unitTo))
                 .thenThrow(new InvalidMeasurementException("Invalid measurement"));
 
         mockMvc.perform(get("/api/convert-temperature")
-                        .param("calculationId", String.valueOf(calculationId))
+                        .param("unitFrom", unitFrom)
+                        .param("unitTo", unitTo)
                         .param("measurementAmount", String.valueOf(measurementAmount)))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json("{\"errorDefinition\": {\"errorMessage\": \"Invalid measurement\"}}"));
@@ -87,12 +96,13 @@ class ConversionControllerTest {
     public void ConversionController_ConvertDistance_StatusIsOkAndJsonAsExpected() throws Exception {
 
         float measurementAmount = 20.0f;
-        int calculationId = DistanceService.DISTANCE_KILOMETERS_TO_MILES;
+        String unitFrom = DistanceService.DISTANCE_UNITS_KILOMETERS;
+        String unitTo = DistanceService.DISTANCE_UNITS_MILES;
         float expectedResult = 12.43f;
-        when(distanceService.precheckValidations(measurementAmount, calculationId)).thenReturn(true);
-        when(distanceService.convertMeasurement(measurementAmount, calculationId)).thenReturn(expectedResult);
+        when(distanceService.convertMeasurement(measurementAmount, unitFrom,unitTo)).thenReturn(expectedResult);
         mockMvc.perform(get("/api/convert-distance")
-                        .param("calculationId", String.valueOf(calculationId))
+                        .param("unitFrom", unitFrom)
+                        .param("unitTo", unitTo)
                         .param("measurementAmount", String.valueOf(measurementAmount))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -102,13 +112,14 @@ class ConversionControllerTest {
 
     @Test
     public void ConversionController_ConvertDistance_InvalidCalculation() throws Exception {
-        int calculationId = -1; // an invalid calculation ID
+        String unitFrom = DistanceService.DISTANCE_UNITS_MILES;
         float measurementAmount = 20.0f;
-        when(distanceService.precheckValidations(measurementAmount, calculationId))
+        when(distanceService.convertMeasurement(measurementAmount, unitFrom,"invalid_unit"))
                 .thenThrow(new InvalidCalculationException("Invalid calculation ID"));
 
         mockMvc.perform(get("/api/convert-distance")
-                        .param("calculationId", String.valueOf(calculationId))
+                        .param("unitFrom", unitFrom)
+                        .param("unitTo", "invalid_unit")
                         .param("measurementAmount", String.valueOf(measurementAmount)))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json("{\"errorDefinition\": {\"errorMessage\": \"Invalid calculation ID\"}}"));
@@ -116,13 +127,15 @@ class ConversionControllerTest {
 
     @Test
     public void ConversionController_ConvertDistance_InvalidMeasurement() throws Exception {
-        int calculationId = -1; // an invalid calculation ID
-        float measurementAmount = 20.0f;
-        when(distanceService.precheckValidations(measurementAmount, calculationId))
+        String unitFrom = DistanceService.DISTANCE_UNITS_METERS;
+        String unitTo = DistanceService.DISTANCE_UNITS_METERS;
+        float measurementAmount = -500f;
+        when(distanceService.convertMeasurement(measurementAmount, unitFrom,unitTo))
                 .thenThrow(new InvalidMeasurementException("Invalid measurement"));
 
         mockMvc.perform(get("/api/convert-distance")
-                        .param("calculationId", String.valueOf(calculationId))
+                        .param("unitFrom", unitFrom)
+                        .param("unitTo", unitTo)
                         .param("measurementAmount", String.valueOf(measurementAmount)))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json("{\"errorDefinition\": {\"errorMessage\": \"Invalid measurement\"}}"));
@@ -132,11 +145,14 @@ class ConversionControllerTest {
     public void ConversionController_ConvertWeight_StatusIsOkAndJsonAsExpected() throws Exception {
 
         float measurementAmount = 20.0f;
-        int calculationId = WeightService.WEIGHT_KILOGRAMS_TO_POUNDS;
+        String unitFrom = WeightService.WEIGHT_UNITS_KILOGRAMS;
+        String unitTo = WeightService.WEIGHT_UNITS_POUNDS;
+
         float expectedResult = 44.1f;
-        when(weightService.convertMeasurement(measurementAmount, calculationId)).thenReturn(expectedResult);
+        when(weightService.convertMeasurement(measurementAmount, unitFrom,unitTo)).thenReturn(expectedResult);
         mockMvc.perform(get("/api/convert-weight")
-                        .param("calculationId", String.valueOf(calculationId))
+                        .param("unitFrom", unitFrom)
+                        .param("unitTo", unitTo)
                         .param("measurementAmount", String.valueOf(measurementAmount))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -146,27 +162,31 @@ class ConversionControllerTest {
 
     @Test
     public void ConversionController_ConvertWeight_InvalidCalculation() throws Exception {
-        int calculationId = -1; // an invalid calculation ID
+        String unitFrom = WeightService.WEIGHT_UNITS_POUNDS;
+
         float measurementAmount = 20.0f;
-        when(weightService.precheckValidations(measurementAmount, calculationId))
-                .thenThrow(new InvalidCalculationException("Invalid calculation ID"));
+        when(weightService.convertMeasurement(measurementAmount, unitFrom,"invalid_to_unit"))
+                .thenThrow(new InvalidCalculationException("Invalid to unit"));
 
         mockMvc.perform(get("/api/convert-weight")
-                        .param("calculationId", String.valueOf(calculationId))
+                        .param("unitFrom", unitFrom)
+                        .param("unitTo", "invalid_to_unit")
                         .param("measurementAmount", String.valueOf(measurementAmount)))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().json("{\"errorDefinition\": {\"errorMessage\": \"Invalid calculation ID\"}}"));
+                .andExpect(content().json("{\"errorDefinition\": {\"errorMessage\": \"Invalid to unit\"}}"));
     }
 
     @Test
     public void ConversionController_ConvertWeight_InvalidMeasurement() throws Exception {
-        int calculationId = -1; // an invalid calculation ID
+        String unitFrom = WeightService.WEIGHT_UNITS_KILOGRAMS;
+        String unitTo = WeightService.WEIGHT_UNITS_POUNDS;
         float measurementAmount = 20.0f;
-        when(weightService.convertMeasurement(measurementAmount, calculationId))
+        when(weightService.convertMeasurement(measurementAmount, unitFrom,unitTo))
                 .thenThrow(new InvalidCalculationException("Invalid measurement"));
 
         mockMvc.perform(get("/api/convert-weight")
-                        .param("calculationId", String.valueOf(calculationId))
+                        .param("unitFrom", unitFrom)
+                        .param("unitTo", unitTo)
                         .param("measurementAmount", String.valueOf(measurementAmount)))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json("{\"errorDefinition\": {\"errorMessage\": \"Invalid measurement\"}}"));
@@ -174,13 +194,15 @@ class ConversionControllerTest {
 
     @Test
     public void ConversionController_ConvertWeight_OtherError() throws Exception {
-        int calculationId = 1; // an invalid calculation ID
+        String unitFrom = WeightService.WEIGHT_UNITS_GRAMS;
+        String unitTo = WeightService.WEIGHT_UNITS_KILOGRAMS;
         float measurementAmount = 20.0f;
-        when(weightService.convertMeasurement(measurementAmount, calculationId))
+        when(weightService.convertMeasurement(measurementAmount, unitFrom,unitTo))
                 .thenThrow(new NullPointerException());
 
         mockMvc.perform(get("/api/convert-weight")
-                        .param("calculationId", String.valueOf(calculationId))
+                        .param("unitFrom", unitFrom)
+                        .param("unitTo", unitTo)
                         .param("measurementAmount", String.valueOf(measurementAmount)))
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().json("{\"errorDefinition\": {\"errorMessage\": null}}"));

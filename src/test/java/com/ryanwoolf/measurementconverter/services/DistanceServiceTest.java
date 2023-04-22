@@ -20,38 +20,68 @@ class DistanceServiceTest {
     @Test
     public void DistanceService_ConvertDistance_AnswerIsCreatedKMToMiles() throws Exception {
         float measurementAmount = 20.0f;
-        int calculationId = DistanceService.DISTANCE_KILOMETERS_TO_MILES;
+        String unitFrom = DistanceService.DISTANCE_UNITS_KILOMETERS;
+        String unitTo = DistanceService.DISTANCE_UNITS_MILES;
         float expectedResult = 12.43f;
-        assertEquals(expectedResult,distanceService.convertMeasurement(measurementAmount,calculationId),.01);
+        assertEquals(expectedResult,distanceService.convertMeasurement(measurementAmount,unitFrom,unitTo),.01);
     }
 
     @Test
     public void DistanceService_ConvertDistance_AnswerIsCreatedMilesToKM() throws Exception {
         float measurementAmount = 12.43f;
-        int calculationId = DistanceService.DISTANCE_MILES_TO_KILOMETERS;
+        String unitFrom = DistanceService.DISTANCE_UNITS_MILES;
+        String unitTo = DistanceService.DISTANCE_UNITS_KILOMETERS;
         float expectedResult = 20.0f;
-        assertEquals(expectedResult,distanceService.convertMeasurement(measurementAmount,calculationId),.01);
+        assertEquals(expectedResult,distanceService.convertMeasurement(measurementAmount,unitFrom,unitTo),.01);
     }
 
     @Test
-    public void DistanceService_ConvertDistance_PrecheckValidationsPass() throws Exception {
-        float measurementAmount = 12.43f;
-        int calculationId = DistanceService.DISTANCE_MILES_TO_KILOMETERS;
-        assertTrue(distanceService.precheckValidations(measurementAmount,calculationId));
+    public void DistanceService_ConvertDistance_AnswerIsCreatedMilesToMetres() throws Exception {
+        float measurementAmount = 12.4300f;
+        String unitFrom = DistanceService.DISTANCE_UNITS_MILES;
+        String unitTo = DistanceService.DISTANCE_UNITS_METERS;
+        float expectedResult = 19999.87f;
+        assertEquals(expectedResult,distanceService.convertMeasurement(measurementAmount,unitFrom,unitTo),.01);
+    }
+
+    @Test
+    public void DistanceService_ConvertDistance_AnswerIsCreatedKilometersToMetres() throws Exception {
+        float measurementAmount = 12.4300f;
+        String unitFrom = DistanceService.DISTANCE_UNITS_KILOMETERS;
+        String unitTo = DistanceService.DISTANCE_UNITS_METERS;
+        float expectedResult = 12430f;
+        assertEquals(expectedResult,distanceService.convertMeasurement(measurementAmount,unitFrom,unitTo),.01);
+    }
+
+    @Test
+    public void DistanceService_ConvertDistance_AnswerIsCreatedMetersToMiles() throws Exception {
+        float measurementAmount = 1500f;
+        String unitFrom = DistanceService.DISTANCE_UNITS_METERS;
+        String unitTo = DistanceService.DISTANCE_UNITS_MILES;
+        float expectedResult = 0.932f;
+        assertEquals(expectedResult,distanceService.convertMeasurement(measurementAmount,unitFrom,unitTo),.01);
+    }
+
+    @Test
+    public void DistanceService_ConvertDistance_AnswerIsCreatedMetersToKilometers() throws Exception {
+        float measurementAmount = 1500f;
+        String unitFrom = DistanceService.DISTANCE_UNITS_METERS;
+        String unitTo = DistanceService.DISTANCE_UNITS_KILOMETERS;
+        float expectedResult = 1.5f;
+        assertEquals(expectedResult,distanceService.convertMeasurement(measurementAmount,unitFrom,unitTo),.01);
     }
 
     @Test
     public void DistanceService_ConvertDistance_CalculationError() throws Exception {
         float measurementAmount = 20.0f;
-        int calculationId = -1;
         assertThrowsExactly(InvalidCalculationException.class,
                 ()->{
-                    distanceService.precheckValidations(measurementAmount,calculationId);
+                    distanceService.convertMeasurement(measurementAmount,"invalid_from_unit",DistanceService.DISTANCE_UNITS_KILOMETERS);
                 });
 
         assertThrowsExactly(InvalidCalculationException.class,
                 ()->{
-                    distanceService.convertMeasurement(measurementAmount,calculationId);
+                    distanceService.convertMeasurement(measurementAmount,DistanceService.DISTANCE_UNITS_KILOMETERS,"invalid_from_unit");
                 });
     }
 }

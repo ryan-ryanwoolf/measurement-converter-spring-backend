@@ -10,39 +10,47 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
-public class DistanceService  implements Measurement {
+public class DistanceService {
+    public static final String DISTANCE_UNITS_METERS = "meters";
+    public static final String DISTANCE_UNITS_KILOMETERS = "kilometers";
+    public static final String DISTANCE_UNITS_MILES = "miles";
 
-    public static final int DISTANCE_KILOMETERS_TO_MILES = 1;
-    public static final int DISTANCE_MILES_TO_KILOMETERS = 2;
 
+    public float convertMeasurement(float fromAmount, String unitFrom,String unitTo) throws InvalidCalculationException, InvalidMeasurementException {
+        float convertedToSIUnit = convertToSIUnit(fromAmount,unitFrom);
+        System.out.println("convertedToSIUnit:"+convertedToSIUnit);
+        System.out.println("convertedFromSIUnit:"+convertFromSIUnit(convertedToSIUnit,unitTo));
+        return convertFromSIUnit(convertedToSIUnit,unitTo);
+    }
 
-    @Override
-    public float convertMeasurement(float fromAmount, int calculationId) throws InvalidCalculationException {
-
-        DecimalFormat decimalFormat = new DecimalFormat("#.##");
-        decimalFormat.setMaximumFractionDigits(2);
-        System.out.println("in convertMeasurement");
-        switch (calculationId) {
-            case DISTANCE_KILOMETERS_TO_MILES:
-                float miles = fromAmount / 1.609F; // convert kilometers to miles
-                return miles;
-            case DISTANCE_MILES_TO_KILOMETERS:
-                float kilometers = fromAmount * 1.609F; // convert miles to kilometers
-                return kilometers;
+    public float convertToSIUnit(float fromAmount,String unitFrom) throws InvalidCalculationException {
+        switch(unitFrom) {
+            case DISTANCE_UNITS_KILOMETERS:
+                //calculation
+                    return fromAmount * 1000;
+            case DISTANCE_UNITS_MILES:
+                //calculation
+                return fromAmount * 1609;
+            case DISTANCE_UNITS_METERS:
+                return fromAmount;
             default:
-                throw new InvalidCalculationException("The calculation provided is not applicable for a distance conversion");
-                //throw invalid calculation type
-                // code block
+                throw new InvalidCalculationException("The unit from provided is not applicable for a temperature conversion");
         }
     }
 
-    @Override
-    public boolean precheckValidations(float fromAmount, int calculationId) throws InvalidMeasurementException, InvalidCalculationException {
-        List<Integer> validCalculations = Arrays.asList(DISTANCE_KILOMETERS_TO_MILES, DISTANCE_MILES_TO_KILOMETERS);
-        if (!validCalculations.contains(calculationId)) {
-            throw new InvalidCalculationException("The calculation provided is not applicable for a temperature conversion");
+    public float convertFromSIUnit(float siAmount,String unitTo) throws InvalidCalculationException {
+        switch(unitTo) {
+            case DISTANCE_UNITS_KILOMETERS:
+                //calculation
+                return siAmount / 1000;
+            case DISTANCE_UNITS_MILES:
+                //calculation
+                return siAmount / 1609;
+            case DISTANCE_UNITS_METERS:
+                return siAmount;
+            default:
+                throw new InvalidCalculationException("The unit to provided is not applicable for a temperature conversion");
         }
-
-        return true;
     }
+
 }

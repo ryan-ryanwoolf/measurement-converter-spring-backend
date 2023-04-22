@@ -20,38 +20,96 @@ class WeightServiceTest {
     @Test
     public void WeightService_ConvertWeight_AnswerIsCreatedKgToPounds() throws Exception {
         float measurementAmount = 20.0f;
-        int calculationId = WeightService.WEIGHT_KILOGRAMS_TO_POUNDS;
+        String unitFrom = WeightService.WEIGHT_UNITS_KILOGRAMS;
+        String unitTo = WeightService.WEIGHT_UNITS_POUNDS;
+
         float expectedResult = 44.1f;
-        assertEquals(expectedResult,weightService.convertMeasurement(measurementAmount,calculationId),.01);
+        assertEquals(expectedResult,weightService.convertMeasurement(measurementAmount,unitFrom,unitTo),.01);
     }
 
     @Test
     public void WeightService_ConvertWeight_AnswerIsCreatedPoundsToKgs() throws Exception {
         float measurementAmount = 44.1f;
-        int calculationId = WeightService.WEIGHT_POUNDS_TO_KILOGRAMS;
+        String unitFrom = WeightService.WEIGHT_UNITS_POUNDS;
+        String unitTo = WeightService.WEIGHT_UNITS_KILOGRAMS;
+
         float expectedResult = 20.0f;
-        assertEquals(expectedResult,weightService.convertMeasurement(measurementAmount,calculationId),.01);
+        assertEquals(expectedResult,weightService.convertMeasurement(measurementAmount,unitFrom,unitTo),.01);
+    }
+
+    @Test
+    public void WeightService_ConvertWeight_AnswerIsCreatedGramsToKgs() throws Exception {
+        float measurementAmount = 950f;
+        String unitFrom = WeightService.WEIGHT_UNITS_GRAMS;
+        String unitTo = WeightService.WEIGHT_UNITS_KILOGRAMS;
+
+        float expectedResult = .95f;
+        assertEquals(expectedResult,weightService.convertMeasurement(measurementAmount,unitFrom,unitTo),.01);
+    }
+
+    @Test
+    public void WeightService_ConvertWeight_AnswerIsCreatedGramsToPounds() throws Exception {
+        float measurementAmount = 950f;
+        String unitFrom = WeightService.WEIGHT_UNITS_GRAMS;
+        String unitTo = WeightService.WEIGHT_UNITS_POUNDS;
+
+        float expectedResult = 2.09f;
+        assertEquals(expectedResult,weightService.convertMeasurement(measurementAmount,unitFrom,unitTo),.01);
+    }
+
+    @Test
+    public void WeightService_ConvertWeight_AnswerIsCreatedKgsToGrams() throws Exception {
+        float measurementAmount = 950f;
+        String unitFrom = WeightService.WEIGHT_UNITS_KILOGRAMS;
+        String unitTo = WeightService.WEIGHT_UNITS_GRAMS;
+
+        float expectedResult = 950000f;
+        assertEquals(expectedResult,weightService.convertMeasurement(measurementAmount,unitFrom,unitTo),.01);
+    }
+
+    @Test
+    public void WeightService_ConvertWeight_AnswerIsCreatedPoundsToGrams() throws Exception {
+        float measurementAmount = 950f;
+        String unitFrom = WeightService.WEIGHT_UNITS_POUNDS;
+        String unitTo = WeightService.WEIGHT_UNITS_GRAMS;
+
+        float expectedResult = 430839.03f;
+        assertEquals(expectedResult,weightService.convertMeasurement(measurementAmount,unitFrom,unitTo),.01);
+    }
+
+    @Test
+    public void WeightService_ConvertWeight_ZeroConversionPounds() throws Exception {
+        float measurementAmount = 0f;
+        String unitFrom = WeightService.WEIGHT_UNITS_POUNDS;
+        String unitTo = WeightService.WEIGHT_UNITS_KILOGRAMS;
+
+        float expectedResult = 0f;
+        assertEquals(expectedResult,weightService.convertMeasurement(measurementAmount,unitFrom,unitTo),.01);
+    }
+
+    @Test
+    public void WeightService_ConvertWeight_ZeroConversionGrams() throws Exception {
+        float measurementAmount = 0f;
+        String unitFrom = WeightService.WEIGHT_UNITS_GRAMS;
+        String unitTo = WeightService.WEIGHT_UNITS_KILOGRAMS;
+
+        float expectedResult = 0f;
+        assertEquals(expectedResult,weightService.convertMeasurement(measurementAmount,unitFrom,unitTo),.01);
     }
 
     @Test
     public void WeightService_ConvertWeight_CalculationError() throws Exception {
         float measurementAmount = 20.0f;
-        int calculationId = -1;
+        String unitFrom = WeightService.WEIGHT_UNITS_GRAMS;
+        String unitTo = WeightService.WEIGHT_UNITS_POUNDS;
         assertThrowsExactly(InvalidCalculationException.class,
                 ()->{
-                    weightService.precheckValidations(measurementAmount,calculationId);
+                    weightService.convertMeasurement(measurementAmount,unitFrom,"invalid_unit");
                 });
 
         assertThrowsExactly(InvalidCalculationException.class,
                 ()->{
-                    weightService.convertMeasurement(measurementAmount,calculationId);
+                    weightService.convertMeasurement(measurementAmount,"invalid_unit",unitTo);
                 });
-    }
-
-    @Test
-    public void WeightService_ConvertWeight_PrecheckValidationsPass() throws Exception {
-        float measurementAmount = 12.43f;
-        int calculationId = WeightService.WEIGHT_KILOGRAMS_TO_POUNDS;
-        assertTrue(weightService.precheckValidations(measurementAmount,calculationId));
     }
 }
