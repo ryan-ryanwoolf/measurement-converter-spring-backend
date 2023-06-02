@@ -28,8 +28,8 @@ public class ConversionController {
     This is the endpoint that calculates the conversion from metric to imperial and vice versa
      */
 
-    @CrossOrigin( origins = {"http://localhost:4200"} ) //Dev
-//    @CrossOrigin( origins = {"https://master.d3gm55w78wva9q.amplifyapp.com"} ) //Prod
+//    @CrossOrigin( origins = {"http://localhost:4200"} ) //Dev
+    @CrossOrigin( origins = {"https://master.d3gm55w78wva9q.amplifyapp.com"} ) //Prod
     @GetMapping("/convert-temperature")
     public ResponseEntity<GenericResponse> convertTemperature(
                                                    @RequestParam("unitFrom") String unitFrom,
@@ -42,8 +42,8 @@ public class ConversionController {
 
     }
 
-    @CrossOrigin( origins = {"http://localhost:4200"} ) //Dev
-//    @CrossOrigin( origins = {"https://master.d3gm55w78wva9q.amplifyapp.com"} ) //Prod
+//    @CrossOrigin( origins = {"http://localhost:4200"} ) //Dev
+    @CrossOrigin( origins = {"https://master.d3gm55w78wva9q.amplifyapp.com"} ) //Prod
     @GetMapping("/convert-distance")
     public ResponseEntity<GenericResponse> convertDistance(
             @RequestParam("unitFrom") String unitFrom,
@@ -55,8 +55,8 @@ public class ConversionController {
 
     }
 
-    @CrossOrigin( origins = {"http://localhost:4200"} ) //Dev
-//    @CrossOrigin( origins = {"https://master.d3gm55w78wva9q.amplifyapp.com"} ) //Prod
+//    @CrossOrigin( origins = {"http://localhost:4200"} ) //Dev
+    @CrossOrigin( origins = {"https://master.d3gm55w78wva9q.amplifyapp.com"} ) //Prod
     @GetMapping("/convert-weight")
     public ResponseEntity<GenericResponse> convertWeight(
             @RequestParam("unitFrom") String unitFrom,
