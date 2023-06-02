@@ -39,6 +39,7 @@ public class ConversionController {
 //        temperatureService.precheckValidations(measurementAmount,calculationId);
         float getAnswer = temperatureService.convertMeasurement(measurementAmount,unitFrom,unitTo);
             GenericResponse response = new GenericResponse("The measurement was calculated!",200,true, getAnswer);
+            System.out.println("testing a concrete change to trigger pipeline build");
             return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
