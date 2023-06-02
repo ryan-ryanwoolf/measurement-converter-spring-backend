@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class ConversionController {
 
-    
+
     @Autowired
     TemperatureService temperatureService;
 
