@@ -25,6 +25,8 @@ public class TemperatureService {
     }
 
     public float convertToSIUnit(float fromAmount,String unitFrom) throws InvalidCalculationException {
+
+        System.out.println("fromAmount:"+fromAmount);
         switch(unitFrom) {
             case TEMPERATURE_UNITS_FAHRENHEIT:
                 //calculation
